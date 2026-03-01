@@ -12,7 +12,7 @@ class LabelCreateSchema(Schema):
     )
     color = fields.Str(
         validate=validate.Length(equal=7),
-        missing='#808080'
+        load_default='#808080'
     )
     
     @validates('color')

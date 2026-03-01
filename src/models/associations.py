@@ -9,7 +9,7 @@ issue_labels = db.Table(
     'issue_labels',
     db.Column('issue_id', db.Integer, db.ForeignKey('issues.id', ondelete='CASCADE'), primary_key=True),
     db.Column('label_id', db.Integer, db.ForeignKey('labels.id', ondelete='CASCADE'), primary_key=True),
-    db.Column('created_at', db.DateTime, nullable=False, default=datetime.utcnow)
+    db.Column('created_at', db.DateTime, nullable=False, default=datetime.now)
 )
 
 
@@ -22,7 +22,7 @@ class ProjectMember(db.Model):
     project_id = db.Column(db.Integer, db.ForeignKey('projects.id', ondelete='CASCADE'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
     role = db.Column(db.String(20), nullable=False, default='member')  # owner, admin, member, viewer
-    joined_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    joined_at = db.Column(db.DateTime, nullable=False, default=datetime.now)
     
     # Constraints
     __table_args__ = (
@@ -43,7 +43,7 @@ class Assignment(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     issue_id = db.Column(db.Integer, db.ForeignKey('issues.id', ondelete='CASCADE'), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), nullable=False)
-    assigned_at = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    assigned_at = db.Column(db.DateTime, nullable=False, default=datetime.now)
     
     # Constraints
     __table_args__ = (

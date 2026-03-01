@@ -51,7 +51,7 @@ class TestAuthService:
             role='developer'
         )
         
-        assert user is not None
+        assert user is not None, f"Erro interno da API: {error}"
         assert error is None
         assert user.username == 'newuser'
         assert user.email == 'new@example.com'

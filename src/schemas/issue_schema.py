@@ -12,11 +12,11 @@ class IssueCreateSchema(Schema):
     description = fields.Str(validate=validate.Length(max=5000))
     priority = fields.Str(
         validate=validate.OneOf(['low', 'medium', 'high', 'critical']),
-        missing='medium'
+        load_default='medium'
     )
     status = fields.Str(
         validate=validate.OneOf(['open', 'in_progress', 'resolved', 'closed']),
-        missing='open'
+        load_default='open'
     )
 
 

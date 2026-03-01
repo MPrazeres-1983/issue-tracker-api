@@ -16,30 +16,34 @@ def app():
     app = create_app('testing')
     app.config['TESTING'] = True
 
-    with app.app_context():
-        _db.create_all()
-        yield app
-        _db.drop_all()
+    # Não criamos nem destruímos as tabelas aqui.
+    # Apenas devolvemos a app para ser usada na sessão inteira.
+    yield app
 
 
 @pytest.fixture(scope='function')
 def db(app):
-    """Create a new database session for each test."""
+    """Create a new database session with clean tables for each test."""
     with app.app_context():
-        _db.session.begin_nested()
+        # Cria todas as tabelas, limpas, antes de o teste começar
+        _db.create_all()
+        
         yield _db
+        
+        # Faz rollback de transações pendentes, remove a sessão e apaga as tabelas no fim do teste
         _db.session.rollback()
         _db.session.remove()
+        _db.drop_all()
 
 
 @pytest.fixture
-def client(app):
+def client(app, db):  
     """Create a test client."""
     return app.test_client()
 
 
 @pytest.fixture
-def runner(app):
+def runner(app, db):
     """Create a test CLI runner."""
     return app.test_cli_runner()
 

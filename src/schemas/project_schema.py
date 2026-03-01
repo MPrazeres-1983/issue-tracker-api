@@ -35,7 +35,7 @@ class ProjectMemberAddSchema(Schema):
     user_id = fields.Int(required=True)
     role = fields.Str(
         validate=validate.OneOf(['owner', 'admin', 'member', 'viewer']),
-        missing='member'
+        load_default='member'
     )
 
 

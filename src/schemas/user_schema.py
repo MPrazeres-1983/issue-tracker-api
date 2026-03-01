@@ -21,7 +21,7 @@ class UserRegistrationSchema(Schema):
     )
     role = fields.Str(
         validate=validate.OneOf(['admin', 'developer', 'viewer']),
-        missing='developer'
+        load_default='developer'
     )
     
     @validates('password')

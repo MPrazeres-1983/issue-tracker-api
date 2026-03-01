@@ -2400,7 +2400,7 @@ user = User(
     password_hash='...',
     role='admin',
     is_active=True,
-    created_at=datetime.utcnow()
+    created_at=datetime.now()
 )
 db.session.add(user)
 db.session.commit()
@@ -2734,7 +2734,7 @@ def health_check():
     
     return jsonify({
         'status': 'healthy',
-        'timestamp': datetime.utcnow().isoformat(),
+        'timestamp': datetime.now().isoformat(),
         'version': os.environ.get('VERSION', '1.0.0'),
         'database': db_status
     }), 200
@@ -3630,7 +3630,7 @@ class SoftDeleteMixin:
     deleted_at = db.Column(db.DateTime, nullable=True)
     
     def soft_delete(self):
-        self.deleted_at = datetime.utcnow()
+        self.deleted_at = datetime.now()
         db.session.commit()
     
     def restore(self):

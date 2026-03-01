@@ -2,7 +2,7 @@
 
 import logging
 import sys
-from pythonjsonlogger import jsonlogger
+from pythonjsonlogger import json as jsonlogger
 
 
 def setup_logger(name: str = 'issue_tracker', level: str = 'INFO', log_format: str = 'json') -> logging.Logger:
