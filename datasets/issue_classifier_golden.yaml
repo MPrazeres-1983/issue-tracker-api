@@ -1,0 +1,110 @@
+dataset_id: issue_classifier_golden
+description: 12 issues reais de software com classificação esperada de prioridade.
+cases:
+  - id: i001
+    input:
+      title: "App crashes on login for all users"
+      description: "Since the last deploy, no user can log in. The app crashes immediately after submitting credentials. All users are blocked."
+    expected:
+      priority: critical
+      status: open
+    notes: Sistema completamente fora — prioridade crítica óbvia.
+
+  - id: i002
+    input:
+      title: "Export to PDF freezes the application"
+      description: "Every time I click export PDF, the app hangs and I have to force quit. Reproducible 100% of the time."
+    expected:
+      priority: high
+      status: open
+    notes: Bug reproduzível com impacto directo, sem workaround.
+
+  - id: i003
+    input:
+      title: "Add dark mode to settings"
+      description: "It would be great to have a dark mode option in the user settings panel."
+    expected:
+      priority: low
+      status: open
+    notes: Feature request, sem impacto operacional.
+
+  - id: i004
+    input:
+      title: "Database connection pool exhausted under load"
+      description: "Under heavy traffic, the database connection pool gets exhausted and requests start failing. We can temporarily workaround by restarting the service."
+    expected:
+      priority: high
+      status: open
+    notes: Problema grave mas com workaround temporário.
+
+  - id: i005
+    input:
+      title: "Typo in the welcome email subject"
+      description: "The welcome email says 'Welcme to the platform' instead of 'Welcome to the platform'."
+    expected:
+      priority: low
+      status: open
+    notes: Erro cosmético sem impacto funcional.
+
+  - id: i006
+    input:
+      title: "Payment processing failing for Visa cards"
+      description: "Users with Visa cards cannot complete purchases. Mastercard works fine. This is causing revenue loss."
+    expected:
+      priority: critical
+      status: open
+    notes: Falha de pagamento = perda de receita = crítico.
+
+  - id: i007
+    input:
+      title: "Search results load slowly on large datasets"
+      description: "When searching in projects with more than 1000 issues, results take 8-12 seconds to load. Small projects are fine."
+    expected:
+      priority: medium
+      status: open
+    notes: Degradação de performance, workaround existe (projectos pequenos).
+
+  - id: i008
+    input:
+      title: "User profile avatar not displaying correctly on Safari"
+      description: "The avatar image appears stretched on Safari browser. All other browsers display it correctly."
+    expected:
+      priority: low
+      status: open
+    notes: Bug cosmético num browser específico.
+
+  - id: i009
+    input:
+      title: "Security vulnerability: SQL injection possible in search endpoint"
+      description: "The search endpoint does not sanitize input, allowing raw SQL injection attacks. This is a critical security vulnerability."
+    expected:
+      priority: critical
+      status: open
+    notes: Vulnerabilidade de segurança = sempre crítico.
+
+  - id: i010
+    input:
+      title: "Email notifications not being sent"
+      description: "Users are not receiving email notifications for issue assignments. The feature worked last week. No error in logs."
+    expected:
+      priority: high
+      status: open
+    notes: Funcionalidade completamente quebrada, sem workaround claro.
+
+  - id: i011
+    input:
+      title: "Add keyboard shortcut to create new issue"
+      description: "Would be more productive to have a keyboard shortcut (e.g. Ctrl+N) to quickly create a new issue."
+    expected:
+      priority: low
+      status: open
+    notes: Melhoria de produtividade, não é um bug.
+
+  - id: i012
+    input:
+      title: "Pagination breaks when filtering by multiple labels"
+      description: "When filtering issues by 2 or more labels, the pagination shows incorrect total counts. The issues are displayed correctly but pagination is wrong."
+    expected:
+      priority: medium
+      status: open
+    notes: Bug de UI com workaround (ver tudo numa página).

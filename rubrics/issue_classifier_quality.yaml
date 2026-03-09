@@ -1,0 +1,9 @@
+rubric_id: issue_classifier_quality
+judge_model: llama-3.3-70b-versatile
+dimensions:
+  - name: reasoning
+    scale: [1, 2, 3, 4, 5]
+    instruction: "Is the reason field a clear and accurate one-sentence explanation of why this priority was assigned?"
+  - name: consistency
+    scale: [1, 2, 3, 4, 5]
+    instruction: "Is the priority level consistent with the severity described in the issue title and description?"

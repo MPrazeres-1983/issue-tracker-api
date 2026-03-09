@@ -1,0 +1,49 @@
+id: issue_classifier
+version: 1.0.0
+description: Classifica issues de software por prioridade e status com base no título e descrição.
+system_prompt: "You are a precise software issue classifier. Analyse the issue title and description and return ONLY valid JSON. No explanations, no markdown, no code blocks."
+template: |
+  Classify the following software issue.
+
+  Priority definitions:
+  - "critical": system down, data loss, security breach, complete feature failure blocking all users
+  - "high": important feature broken with no workaround, significant performance degradation
+  - "medium": feature partially broken, workaround exists, moderate impact
+  - "low": cosmetic issues, minor inconveniences, feature requests, suggestions
+
+  Status definitions:
+  - "open": new issue, not yet triaged
+
+  Issue title: {{ title }}
+  Issue description: {{ description }}
+
+  Respond ONLY with a JSON object with these exact fields:
+  - priority: string (critical | high | medium | low)
+  - status: string (always "open" for new issues)
+  - confidence: string (high | medium | low)
+  - reason: string (one sentence explaining the classification)
+
+inputs:
+  title:
+    type: string
+    description: Issue title
+  description:
+    type: string
+    description: Issue description
+
+output:
+  format: json
+  schema:
+    priority: { type: string }
+    status: { type: string }
+    confidence: { type: string }
+    reason: { type: string }
+
+params:
+  temperature: 0.0
+  max_tokens: 256
+
+tags:
+  - classification
+  - issues
+  - llmops

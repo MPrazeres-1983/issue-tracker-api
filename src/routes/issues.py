@@ -262,6 +262,39 @@ def add_label(issue_id):
         return error_response("Failed to add label", status_code=500)
 
 
+@issues_bp.route('/issues/suggest', methods=['POST'])
+@require_auth
+def suggest_issue():
+    """Suggest priority and status for an issue using AI classification."""
+    try:
+        from marshmallow import Schema, fields, validate
+
+        class SuggestSchema(Schema):
+            title = fields.Str(required=True, validate=validate.Length(min=1, max=200))
+            description = fields.Str(load_default=None)
+
+        schema = SuggestSchema()
+        data = schema.load(request.get_json() or {})
+
+        from src.services.suggest_service import SuggestService
+        suggest_service = SuggestService()
+
+        suggestion, error = suggest_service.suggest(
+            title=data["title"],
+            description=data.get("description"),
+        )
+
+        if error:
+            return error_response(error, status_code=503)
+
+        return success_response(data=suggestion)
+
+    except ValidationError as e:
+        return validation_error_response(e.messages)
+    except Exception as e:
+        logger.error(f"Error in suggest_issue: {str(e)}")
+        return error_response("Failed to generate suggestion", status_code=500)
+    
 @issues_bp.route('/issues/<int:issue_id>/labels/<int:label_id>', methods=['DELETE'])
 @require_auth
 def remove_label(issue_id, label_id):
