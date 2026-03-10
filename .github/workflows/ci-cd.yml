@@ -28,7 +28,7 @@ jobs:
           FLASK_ENV: testing
           DATABASE_URL: "sqlite:///:memory:"
         run: |
-          pytest tests/ --cov=src --cov-report=xml
+          pytest --cov --junitxml=junit.xml -o junit_family=legacy
 
       - name: Upload coverage to Codecov
         uses: codecov/codecov-action@v4
