@@ -2,7 +2,7 @@
 
 [![CI/CD Pipeline](https://github.com/MPrazeres-1983/issue-tracker-api/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/MPrazeres-1983/issue-tracker-api/actions)
 [![Prompt Eval](https://github.com/MPrazeres-1983/issue-tracker-api/actions/workflows/prompt-eval.yml/badge.svg)](https://github.com/MPrazeres-1983/issue-tracker-api/actions)
-[![codecov](https://codecov.io/gh/MPrazeres-1983/issue-tracker-api/graph/badge.svg?token=776HUXFGKU)](https://codecov.io/gh/MPrazeres-1983/issue-tracker-api)
+[![codecov](https://codecov.io/gh/MPrazeres-1983/issue-tracker-api/graph/badge.svg?token=180b7fb7-8992-4a95-8761-3ddc65addc21)](https://codecov.io/gh/MPrazeres-1983/issue-tracker-api)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
 
