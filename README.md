@@ -6,71 +6,99 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Python 3.13+](https://img.shields.io/badge/python-3.13+-blue.svg)](https://www.python.org/downloads/)
 
-A production-ready REST API for project and issue tracking, built with Flask, PostgreSQL, and modern best practices. Designed as a portfolio project demonstrating professional backend development skills, clean architecture, CI/CD pipelines, and **AI-powered classification with prompt regression testing**.
+A production-ready REST API for project and issue tracking, built with **Flask**, **PostgreSQL** and a clean layered architecture.
 
-## 🟢 Live Demo & Testing
+This project demonstrates professional backend engineering practices with a strong focus on software quality: authentication, role-based access control, automated testing, CI/CD, API documentation, deployment and **AI-powered issue classification with prompt regression testing**.
 
-The API is currently deployed and live!
+---
 
-* **Base URL:** `https://issue-tracker-api-860i.onrender.com/api/v1`
-* **Health Check:** [Test API Status](https://issue-tracker-api-860i.onrender.com/api/v1/health)
+## 🟢 Live Demo
 
-### 🧑‍💻 How to test this API (Postman)
-To make it easy for recruiters and developers to interact with the live database, a pre-configured Postman collection is included in this repository.
-1. Download the `postman_collection.json` file from the root of this repository.
-2. Open [Postman](https://www.postman.com/) and click **Import**.
-3. Select the downloaded file. You now have a ready-to-use workspace to Register, Login, and Create Projects against the live production server!
+The API is deployed and available for testing.
+
+- **Base URL:** `https://issue-tracker-api-860i.onrender.com/api/v1`
+- **Health Check:** [Test API Status](https://issue-tracker-api-860i.onrender.com/api/v1/health)
+
+> The service is hosted on Render. If the API has been idle, the first request may take a few seconds to wake up.
+
+---
+
+## 🧑‍💻 Test with Postman
+
+A pre-configured Postman collection is included in the repository.
+
+1. Download `postman_collection.json` from the repository root.
+2. Open [Postman](https://www.postman.com/).
+3. Click **Import**.
+4. Select the downloaded file.
+5. Use the collection to register, log in and create projects/issues against the live API.
+
+---
 
 ## 📋 Table of Contents
 
-- [Features](#features)
+- [Features](#-features)
 - [AI-Powered Classification](#-ai-powered-classification)
-- [Tech Stack](#tech-stack)
-- [Architecture](#architecture)
-- [Getting Started](#getting-started)
-- [API Documentation](#api-documentation)
-- [Testing & Quality](#testing--quality)
-- [Deployment](#deployment)
+- [Tech Stack](#-tech-stack)
+- [Architecture](#-architecture)
+- [Getting Started](#-getting-started-local-development)
+- [Environment Variables](#-environment-variables)
+- [Testing & Quality](#-testing--quality)
+- [Deployment](#-deployment)
+- [License](#-license)
+
+---
 
 ## ✨ Features
 
 ### Core Functionality
-- **User Management**: Registration, authentication with JWT (access + refresh tokens).
-- **Project Management**: Create, update, and organize projects with team members.
-- **Issue Tracking**: Create and track issues with status, priority, and assignments.
-- **Labeling System**: Categorize issues with customizable labels.
-- **Comments**: Discussion threads on issues.
-- **Role-Based Access Control (RBAC)**: Admin, Developer, and Viewer roles with strict endpoint protection.
-- **AI Classification**: Automatic priority and status suggestion for new issues via LLM.
+
+- **User management**: registration and authentication with JWT access and refresh tokens.
+- **Project management**: create, update and organise projects with team members.
+- **Issue tracking**: create and track issues with status, priority and assignments.
+- **Labels**: categorise issues with custom labels.
+- **Comments**: discussion threads on issues.
+- **Role-Based Access Control**: Admin, Developer and Viewer roles with endpoint-level protection.
+- **AI classification**: automatic priority and status suggestions for new issues using an LLM.
 
 ### Technical Highlights
+
 - RESTful API design with proper HTTP methods and status codes.
-- Input validation and serialization using Marshmallow schemas.
-- In-memory SQLite for isolated, fast, and pollution-free testing.
-- Structured JSON logging ready for observability stacks.
-- Global Error Handlers returning standardized JSON responses.
-- **Prompt regression testing** via [PromptForge](https://github.com/MPrazeres-1983/promptforge) — every CI run evaluates the AI classifier against a golden dataset of 12 real issues.
+- Layered architecture using a Controller-Service-Repository pattern.
+- Input validation and serialization with Marshmallow schemas.
+- PostgreSQL in production.
+- SQLite in-memory database for isolated automated tests.
+- Structured JSON logging.
+- Global error handlers with standardized JSON responses.
+- CI/CD with GitHub Actions.
+- Coverage reporting with Codecov.
+- Prompt regression testing with [PromptForge](https://github.com/MPrazeres-1983/promptforge).
+
+---
 
 ## 🤖 AI-Powered Classification
 
-This API includes an AI classification endpoint that suggests priority and status for new issues based on their title and description.
+The API includes an AI classification endpoint that suggests a priority and status for new issues based on their title and description.
 
-### How it works
+Instead of manually assigning the initial priority, a developer can call:
 
-When a developer submits an issue, instead of manually setting the priority, they can call `/api/v1/issues/suggest` to get an AI-generated suggestion with a confidence score and a one-line explanation.
-
-```
+```http
 POST /api/v1/issues/suggest
 Authorization: Bearer <token>
 Content-Type: application/json
+```
 
+Example request:
+
+```json
 {
   "title": "App crashes on login for all users",
   "description": "Since the last deploy, no user can log in. The app crashes immediately after submitting credentials."
 }
 ```
 
-Response:
+Example response:
+
 ```json
 {
   "success": true,
@@ -83,110 +111,182 @@ Response:
 }
 ```
 
-### Prompt Regression Testing with PromptForge
+---
 
-The classification prompt is treated as a **versioned, tested artefact** using [PromptForge](https://github.com/MPrazeres-1983/promptforge). Every push to `main` runs an automated evaluation of the prompt against a golden dataset of 12 real-world issues — the CI pipeline fails if the classifier regresses.
+## 🔬 Prompt Regression Testing
 
-```
+The issue classification prompt is treated as a **versioned and tested artefact** using [PromptForge](https://github.com/MPrazeres-1983/promptforge).
+
+Every relevant CI run can evaluate the classifier against a golden dataset of labelled issues. If a prompt change causes the classifier to regress, the pipeline can fail before the change reaches production.
+
+```text
 prompt-eval job:
-  ├── prompts/issue_classifier.yaml       # versioned prompt with system prompt
-  ├── datasets/issue_classifier_golden.yaml  # 12 labelled issues (ground truth)
-  ├── configs/issue_classifier.yaml       # evaluators: field_match + LLM-as-judge
-  └── rubrics/issue_classifier_quality.yaml  # judge rubric: reasoning + consistency
+  ├── prompts/issue_classifier.yaml
+  ├── datasets/issue_classifier_golden.yaml
+  └── configs/issue_classifier.yaml
 ```
 
-This means: **if someone changes the prompt and the model starts misclassifying issues, the deployment is blocked automatically.**
+This makes the AI feature testable and reviewable instead of relying on manual checks or intuition.
 
-The eval is powered by [`promptforge-llmops`](https://pypi.org/project/promptforge-llmops/) and runs as a reusable GitHub Action (`MPrazeres-1983/promptforge@v1`).
+The evaluation is powered by [`promptforge-llmops`](https://pypi.org/project/promptforge-llmops/) and runs through the reusable GitHub Action:
+
+```text
+MPrazeres-1983/promptforge@v1
+```
+
+The current provider setup uses **Groq** through an OpenAI-compatible API interface.
+
+---
 
 ## 🛠 Tech Stack
 
-- **Language**: Python 3.13
-- **Framework**: Flask 3.0
-- **Database**: PostgreSQL 17 (Hosted on Neon.tech)
-- **ORM**: SQLAlchemy 2.0
-- **Authentication**: Flask-JWT-Extended, bcrypt
-- **Testing**: pytest, pytest-cov, factory-boy
-- **AI**: OpenAI-compatible API (Groq / llama-3.3-70b-versatile)
-- **LLMOps**: [PromptForge](https://github.com/MPrazeres-1983/promptforge) — prompt versioning & regression testing
-- **CI/CD**: GitHub Actions, Codecov
-- **Cloud Hosting**: Render
+| Area | Technologies |
+| ---- | ------------ |
+| Language | Python 3.13 |
+| Framework | Flask 3.0 |
+| Database | PostgreSQL 17, SQLite for tests |
+| ORM | SQLAlchemy 2.0 |
+| Validation | Marshmallow |
+| Authentication | Flask-JWT-Extended, bcrypt |
+| Testing | pytest, pytest-cov, factory-boy |
+| AI Provider | Groq through an OpenAI-compatible API |
+| LLMOps | PromptForge |
+| CI/CD | GitHub Actions, Codecov |
+| Deployment | Render |
+| Database Hosting | Neon |
+
+---
 
 ## 🏗 Architecture
 
-The project follows a **Layered Architecture** (Controller-Service-Repository pattern) to promote the Separation of Concerns.
+The project follows a layered architecture to keep transport, business logic and persistence concerns separated.
 
 ```text
 ┌─────────────────────────────────────────────────────────────┐
 │                      Client Layer                           │
-│                 (Postman, Web, Mobile)                      │
+│                 Postman, Web, Mobile, API Clients           │
 └─────────────────────────────────────────────────────────────┘
+                              │
                               │ HTTP / REST
                               ▼
 ┌─────────────────────────────────────────────────────────────┐
 │                    API Routes Layer                         │
-│             (Blueprints, Request Extraction)                │
+│             Blueprints, request parsing, responses          │
 ├─────────────────────────────────────────────────────────────┤
 │                  Business Logic Layer                       │
-│         (Services: Auth, Project, Issue, Suggest)           │
+│             Auth, Project, Issue, Suggest services          │
 ├─────────────────────────────────────────────────────────────┤
 │                   Data Access Layer                         │
-│              (Repositories, ORM Queries)                    │
+│              Repositories and ORM queries                   │
 ├─────────────────────────────────────────────────────────────┤
 │                   Persistence Layer                         │
-│                 (PostgreSQL Database)                       │
+│              PostgreSQL / SQLite in tests                   │
 └─────────────────────────────────────────────────────────────┘
 ```
-*This architecture allows business rules to be tested entirely in isolation, independently of the HTTP transport layer.*
+
+This structure makes the business rules easier to test independently from the HTTP layer.
+
+---
 
 ## 🚀 Getting Started (Local Development)
 
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/MPrazeres-1983/issue-tracker-api.git
-   cd issue-tracker-api
-   ```
+### 1. Clone the repository
 
-2. **Create and activate a virtual environment**
-   ```bash
-   python -m venv venv
-   # On Windows: venv\Scripts\activate
-   # On Linux/Mac: source venv/bin/activate
-   ```
+```bash
+git clone https://github.com/MPrazeres-1983/issue-tracker-api.git
+cd issue-tracker-api
+```
 
-3. **Install dependencies**
-   ```bash
-   pip install -r requirements.txt
-   ```
+### 2. Create and activate a virtual environment
 
-4. **Configure environment variables**
-   ```bash
-   # .env
-   OPENAI_API_KEY=your_groq_api_key
-   OPENAI_BASE_URL=https://api.groq.com/openai/v1
-   ```
+```bash
+python -m venv venv
+```
 
-5. **Run the development server**
-   ```bash
-   export FLASK_ENV=development
-   flask run
-   ```
+Windows:
+
+```bash
+venv\Scripts\activate
+```
+
+Linux/macOS:
+
+```bash
+source venv/bin/activate
+```
+
+### 3. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Configure environment variables
+
+Create a `.env` file in the repository root.
+
+```env
+FLASK_ENV=development
+DATABASE_URL=sqlite:///issue_tracker_dev.db
+JWT_SECRET_KEY=change-this-secret-locally
+OPENAI_API_KEY=your_groq_api_key
+OPENAI_BASE_URL=https://api.groq.com/openai/v1
+```
+
+### 5. Run the development server
+
+```bash
+flask run
+```
+
+The local API should now be available at:
+
+```text
+http://127.0.0.1:5000
+```
+
+---
+
+## 🔐 Environment Variables
+
+| Variable | Required | Description |
+| -------- | -------- | ----------- |
+| `FLASK_ENV` | yes | Flask environment: `development`, `testing` or `production` |
+| `DATABASE_URL` | yes | Database connection string |
+| `JWT_SECRET_KEY` | yes | Secret key used to sign JWT tokens |
+| `OPENAI_API_KEY` | yes, for AI endpoint | Groq API key when using Groq |
+| `OPENAI_BASE_URL` | yes, for Groq | OpenAI-compatible base URL |
+| `PYTHON_VERSION` | required on Render | Python runtime version |
+
+For Groq:
+
+```env
+OPENAI_API_KEY=your_groq_api_key
+OPENAI_BASE_URL=https://api.groq.com/openai/v1
+```
+
+---
 
 ## 🧪 Testing & Quality
 
-The project features a robust test suite with ~200 automated tests and +75% coverage. Tests are executed dynamically using an isolated in-memory SQLite database to prevent state pollution.
+The project includes approximately 200 automated tests and maintains more than 75% coverage.
 
-**Run all tests:**
+Tests use an isolated in-memory SQLite database to avoid state pollution and make the suite fast and repeatable.
+
+### Run all tests
+
 ```bash
 pytest tests/
 ```
 
-**Run with coverage report:**
+### Run tests with coverage
+
 ```bash
 pytest tests/ --cov=src --cov-report=term-missing
 ```
 
-**Run prompt regression tests locally:**
+### Run prompt regression tests locally
+
 ```bash
 promptforge eval \
   --prompt prompts/issue_classifier.yaml \
@@ -194,24 +294,51 @@ promptforge eval \
   --config configs/issue_classifier.yaml
 ```
 
+### Quality Signals
+
+- Automated test suite.
+- CI/CD pipeline.
+- Coverage reporting.
+- Isolated test database.
+- Prompt regression checks for the AI classifier.
+- Postman collection for manual API exploration.
+
+---
+
 ## 🌐 Deployment
 
-This application is configured for seamless deployment on **Render**, connected to a **Neon.tech** Serverless Postgres database.
+The application is configured for deployment on **Render**, connected to a **Neon** PostgreSQL database.
 
-**Render Configuration:**
-- **Build Command:**
-  ```bash
-  pip install -r requirements.txt && python -c "from src.app import create_app; from src.models.base import db; app=create_app('production'); app.app_context().push(); db.create_all()"
-  ```
-- **Start Command:**
-  ```bash
-  gunicorn "src.app:create_app('production')"
-  ```
-- **Environment Variables Required:** `FLASK_ENV`, `DATABASE_URL`, `JWT_SECRET_KEY`, `PYTHON_VERSION`, `OPENAI_API_KEY`, `OPENAI_BASE_URL`.
+### Build Command
+
+```bash
+pip install -r requirements.txt && python -c "from src.app import create_app; from src.models.base import db; app=create_app('production'); app.app_context().push(); db.create_all()"
+```
+
+### Start Command
+
+```bash
+gunicorn "src.app:create_app('production')"
+```
+
+### Required Production Variables
+
+```text
+FLASK_ENV
+DATABASE_URL
+JWT_SECRET_KEY
+PYTHON_VERSION
+OPENAI_API_KEY
+OPENAI_BASE_URL
+```
+
+---
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
 
 ---
-**Author:** Mário Prazeres | [LinkedIn](https://www.linkedin.com/in/mario-prazeres/) | [GitHub](https://github.com/MPrazeres-1983)
+
+**Author:** Mário Prazeres  
+[LinkedIn](https://www.linkedin.com/in/mario-prazeres/) · [GitHub](https://github.com/MPrazeres-1983)
