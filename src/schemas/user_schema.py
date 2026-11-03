@@ -19,11 +19,6 @@ class UserRegistrationSchema(Schema):
         validate=validate.Length(min=8, max=128),
         load_only=True
     )
-    role = fields.Str(
-        validate=validate.OneOf(['admin', 'developer', 'viewer']),
-        load_default='developer'
-    )
-    
     @validates('password')
     def validate_password(self, value):
         """Validate password strength."""
