@@ -13,8 +13,7 @@ class TestAuthRoutes:
         response = client.post('/api/v1/auth/register', json={
             'username': 'newuser',
             'email': 'new@example.com',
-            'password': 'NewPass123!',
-            'role': 'developer'
+            'password': 'NewPass123!'
         })
         
         assert response.status_code == 201
@@ -23,6 +22,29 @@ class TestAuthRoutes:
         assert data['data']['username'] == 'newuser'
         assert data['data']['email'] == 'new@example.com'
     
+    @pytest.mark.parametrize('requested_role', ['admin', 'viewer', 'developer'])
+    def test_public_registration_rejects_client_supplied_role(self, client, requested_role):
+        """Public clients must not be able to select their own permissions."""
+        response = client.post('/api/v1/auth/register', json={
+            'username': 'role_probe',
+            'email': 'roleprobe@example.com',
+            'password': 'NewPass123!',
+            'role': requested_role,
+        })
+
+        assert response.status_code == 422
+        from src.repositories import UserRepository
+        assert UserRepository().get_by_username('role_probe') is None
+
+    def test_public_registration_assigns_least_privilege(self, client):
+        response = client.post('/api/v1/auth/register', json={
+            'username': 'normaluser',
+            'email': 'normaluser@example.com',
+            'password': 'NewPass123!',
+        })
+        assert response.status_code == 201
+        assert response.get_json()['data']['role'] == 'developer'
+
     def test_register_invalid_email(self, client):
         """Test registration with invalid email."""
         response = client.post('/api/v1/auth/register', json={

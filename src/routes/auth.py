@@ -27,7 +27,6 @@ def register():
         username: str
         email: str
         password: str
-        role: str (optional, default: developer)
     
     Returns:
         201: User created
@@ -42,8 +41,7 @@ def register():
         user, error = auth_service.register(
             username=data['username'],
             email=data['email'],
-            password=data['password'],
-            role=data.get('role', 'developer')
+            password=data['password']
         )
         
         if error:
