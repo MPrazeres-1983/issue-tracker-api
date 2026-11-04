@@ -23,6 +23,25 @@ class TestGetProjects:
         assert 'meta' in data
         assert 'total' in data['meta']
 
+
+    def test_owner_filter_cannot_list_another_users_projects(self, client, second_user_headers, sample_project):
+        """An owner_id filter must not bypass project membership checks."""
+        response = client.get(
+            f'/api/v1/projects?owner_id={sample_project.owner_id}',
+            headers=second_user_headers,
+        )
+        assert response.status_code == 200
+        assert response.get_json()['meta']['total'] == 0
+        assert response.get_json()['data'] == []
+
+    def test_search_is_scoped_to_accessible_projects(self, client, second_user_headers, sample_project):
+        response = client.get(
+            f'/api/v1/projects?search={sample_project.name}',
+            headers=second_user_headers,
+        )
+        assert response.status_code == 200
+        assert response.get_json()['data'] == []
+
     def test_list_projects_pagination(self, client, auth_headers, sample_project):
         response = client.get('/api/v1/projects?page=1&per_page=5', headers=auth_headers)
         assert response.status_code == 200

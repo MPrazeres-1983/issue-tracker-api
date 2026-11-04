@@ -22,10 +22,19 @@ def jwt_required_custom(fn: Callable) -> Callable:
     def wrapper(*args, **kwargs):
         try:
             verify_jwt_in_request()
-            return fn(*args, **kwargs)
         except Exception as e:
             logger.warning(f"JWT verification failed: {str(e)}")
             return unauthorized_response("Invalid or missing authentication token")
+
+        # JWTs remain valid until expiry, so re-check the user's current state.
+        from src.repositories import UserRepository
+        identity = get_jwt_identity()
+        user = UserRepository().get_by_id(identity.get('user_id'))
+        if user is None or not user.is_active:
+            return unauthorized_response("Account disabled or no longer exists")
+
+        # Do not turn unrelated business errors into misleading HTTP 401.
+        return fn(*args, **kwargs)
     
     return wrapper
 
@@ -59,7 +68,11 @@ def require_role(*allowed_roles: str) -> Callable:
         def wrapper(*args, **kwargs):
             try:
                 identity = get_jwt_identity()
-                user_role = identity.get('role')
+                from src.repositories import UserRepository
+                user = UserRepository().get_by_id(identity.get('user_id'))
+                if user is None or not user.is_active:
+                    return unauthorized_response("Account disabled or no longer exists")
+                user_role = user.role
                 
                 if user_role not in allowed_roles:
                     logger.warning(f"Access denied for role {user_role}. Required: {allowed_roles}")

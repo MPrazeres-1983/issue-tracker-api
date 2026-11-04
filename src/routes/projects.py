@@ -38,27 +38,20 @@ def get_projects():
         search = request.args.get('search')
         is_active = request.args.get('is_active', type=lambda v: v.lower() == 'true')
         
-        # If no owner_id filter, get user's projects
-        if owner_id is None:
-            projects = project_service.get_user_projects(user_id)
-            # Manual pagination for user projects
-            total = len(projects)
-            start = (page - 1) * per_page
-            end = start + per_page
-            items = projects[start:end]
-        else:
-            from src.repositories import ProjectRepository
-            repo = ProjectRepository()
-            result = repo.paginate_with_filters(
-                page=page,
-                per_page=per_page,
-                owner_id=owner_id,
-                search=search,
-                is_active=is_active
-            )
-            items = result['items']
-            total = result['total']
-        
+        # Always scope the query to projects this user can access BEFORE
+        # applying optional filters, otherwise owner_id leaks another user's data.
+        projects = project_service.get_user_projects(user_id)
+        if owner_id is not None:
+            projects = [p for p in projects if p.owner_id == owner_id]
+        if search:
+            projects = [p for p in projects if search.lower() in p.name.lower()]
+        if is_active is not None:
+            projects = [p for p in projects if p.is_active == is_active]
+
+        total = len(projects)
+        start = (page - 1) * per_page
+        items = projects[start:start + per_page]
+
         # Serialize
         schema = ProjectResponseSchema(many=True)
         data = schema.dump(items)
