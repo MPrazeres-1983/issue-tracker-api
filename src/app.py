@@ -50,6 +50,11 @@ def create_app(config_name: str = None) -> Flask:
     
     # Register blueprints
     register_blueprints(app)
+
+    # A useful public landing endpoint that checks database readiness.
+    # Render's default GET / no longer returns 404 for a healthy API.
+    from src.routes.health import health_check
+    app.add_url_rule('/', endpoint='root_health', view_func=health_check)
     
     # Register error handlers
     register_error_handlers(app)

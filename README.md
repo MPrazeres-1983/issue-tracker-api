@@ -342,3 +342,8 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 **Author:** Mário Prazeres  
 [LinkedIn](https://www.linkedin.com/in/mario-prazeres/) · [GitHub](https://github.com/MPrazeres-1983)
+
+
+### Health check e deploy
+
+`GET /` e `GET /api/v1/health` partilham a verificação de disponibilidade da API e da ligação à base de dados. Devolvem HTTP 200 quando a BD responde e HTTP 503 quando a verificação falha. Para configurar o Render, definir o **Health Check Path** como `/api/v1/health` na área de gestão do serviço; esta opção não é aplicada automaticamente pelo GitHub. A rota `/api/v1/ping` testa apenas que o processo responde, não a base de dados.
