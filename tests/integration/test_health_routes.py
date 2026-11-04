@@ -17,6 +17,12 @@ class TestHealthRoutes:
         assert data['data']['status'] == 'healthy'
         assert data['data']['database'] == 'healthy'
     
+    def test_root_health_checks_database(self, client):
+        response = client.get('/')
+        assert response.status_code == 200
+        body = response.get_json()
+        assert body['data']['database'] == 'healthy'
+
     def test_ping(self, client):
         """Test ping endpoint."""
         response = client.get('/api/v1/ping')
